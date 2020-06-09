@@ -1,0 +1,14 @@
+﻿@if (User.IsInRole("Managers") || User.IsInRole("Administrators"))
+{
+    <a href="#">Manage</a>
+    <ul>
+        <li><a asp-action="Index" asp-controller="ManageBakery">Bakeries</a></li>
+        <li><a asp-action="Index" asp-controller="ManageBakeryType">Bakery types</a></li>
+        <li><a asp-action="Index" asp-controller="ManageOrder">Orders</a></li>
+        @if (User.IsInRole("Administrators"))
+        {
+            <li><a href='@string.Format("http://localhost:5000/manageacount?id={0}", User.FindFirstValue("sub"))'>Accounts</a></li>
+        }
+    </ul>
+}
+

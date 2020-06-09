@@ -1,0 +1,126 @@
+﻿@model Bakery
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="banner-area relative about-banner" id="home">
+    <div class="overlay overlay-bg"></div>
+    <div class="container">
+        <div class="row d-flex align-items-center justify-content-center">
+            <div class="about-content col-lg-12">
+                <h1 class="text-white">
+                    Detail
+                </h1>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="menu-list-area section-gap">
+    <div class="container card">
+        <div class="section-top-border">
+            <div class="row">
+                <div class="preview col-md-6">
+                    @*<img class="img-fluid" src="~/img/c1.jpg" alt="">*@
+                    @{
+                        var imgsrc = "";
+                        if (Model.Image != null)
+                        {
+                            var base64 = Convert.ToBase64String(Model.Image);
+                            imgsrc = string.Format("data:image/gif;base64,{0}", base64);
+                        }
+
+                    }
+                    <img src="@imgsrc" class="img-fluid" />
+                </div>
+                <div class="details col-md-6">
+                    @*<form method="post" asp-controller="ShoppingCart" asp-action="AddToShoppingCart" asp-route-id="@Model.Id">*@
+                        <h3 class="product-title">@Model.Name</h3>
+                        <p class="product-description">@Model.Describe</p>
+                        <h4>Rating </h4>
+                        @{
+                            if (!Int32.TryParse(Model.Rating.ToString(), out int a))
+                            {
+                                <p>There is no rating</p>
+                            }
+                            else
+                            {
+                                for (int i = 0; i < (int)Model.Rating; i++)
+                                {
+                                    <i class="fa fa-star text-warning"></i>
+                                }
+                            }
+                        }
+                        <h4 class="price mb-10 mt-10">Amount: <input id="amount" name="amount" type="number" class="w-25" /></h4>
+                        <hr />
+                        <h4 class="price">
+                            Price:
+                            @if (Model.Discount > 0)
+                            {
+                                <s>@Model.Price Đ</s> <i class="fa fa-arrow-right"></i> <b>@(Model.Price - (Model.Price * Model.Discount / 100) ) Đ</b>
+                            }
+                            else
+                            {
+                                <b>@Model.Price Đ</b>
+                            }
+
+                        </h4>
+                        <div class="mt-30">
+                            <button data-toggle="modal" data-target="#modal-default" data-id="@Model.Id" data-amount="1" class="genric-btn info btnAdd">Add</button>
+                            <a asp-controller="Menu" asp-action="Index" class="genric-btn warning">Back</a>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+        <div class="modal-content bg-success">
+            <div class="modal-header">
+                <h4 class="modal-title text-white"><i class="fa fa-check"></i>  Add bakery success</h4>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/vendor/jquery-2.2.4.min.js"></script>
+<script>
+    $(document).ready(function ()
+    {
+        $('#modal-default').on('show.bs.modal', function ()
+        {
+            var myModal = $(this);
+            clearTimeout(myModal.data('hideInterval'));
+            myModal.data('hideInterval', setTimeout(function ()
+            {
+                myModal.modal('hide');
+            }, 1200));
+        });
+
+        $(document).on("click", ".btnAdd", function ()
+        {
+            var id = $(this).data("id");
+            var amount = $("#amount").val();
+            $.ajax({
+                url: "/ShoppingCart/AddToShoppingCart",
+                type: "post",
+                data: {
+                    id: id,
+                    amount: amount
+                },
+                dataType: "json",
+                success: function (response)
+                {
+                    if (response.status)
+                    {
+                        $('#modal-default').addClass("show");
+                    }
+                }
+            })
+        })
+    });
+</script>

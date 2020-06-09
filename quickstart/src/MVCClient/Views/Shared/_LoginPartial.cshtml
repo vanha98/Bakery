@@ -1,0 +1,14 @@
+﻿
+@if (User.Identity.IsAuthenticated)
+{
+    <a href="#">Hello @User.Identity.Name</a>
+    <ul>
+        <li><a asp-action="YourOrders" asp-controller="Home" asp-route-id="@User.FindFirstValue("sub")">Your orders</a></li>
+        <li><a asp-action="Logout" asp-controller="Home">Logout</a></li>
+    </ul>
+        
+}
+else
+{
+    <a asp-action="Login" asp-controller="Home">Login</a>
+}
